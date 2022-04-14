@@ -207,5 +207,6 @@ dmypy.json
 
 # Project Specific Files
 # *.json
-*.json
+# *.json
+environment_variables.py
 commands.txt

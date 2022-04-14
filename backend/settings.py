@@ -2,14 +2,15 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from google.cloud import storage
+from backend import environment_variables
 
 from google.oauth2 import service_account
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = environment_variables.SECRET_KEY
 
-DEBUG = os.environ.get("DEBUG")
+DEBUG = environment_variables.DEBUG
 
 ALLOWED_HOSTS = ["*"]
 
@@ -92,10 +93,10 @@ ASGI_APPLICATION = "backend.asgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
+        "NAME": environment_variables.DB_NAME,
+        "USER": environment_variables.DB_USER,
+        "PASSWORD": environment_variables.DB_PASSWORD,
+        "HOST": environment_variables.DB_HOST,
         "PORT": 5432,
     }
 }
@@ -104,7 +105,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get("REDIS_HOST")],
+            "hosts": [environment_variables.REDIS_HOST],
         },
     },
 }
@@ -135,7 +136,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-MAIL_SERVER = os.environ.get("MAIL_SERVER")
+MAIL_SERVER = environment_variables.MAIL_SERVER
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
@@ -160,7 +161,7 @@ MEDIA_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/"
 
 # Celery Settings
 
-CELERY_BROKER_URL = os.environ.get("REDIS_HOST")
+CELERY_BROKER_URL = environment_variables.REDIS_HOST
 
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
