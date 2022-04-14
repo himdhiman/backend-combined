@@ -206,5 +206,6 @@ dmypy.json
 
 
 # Project Specific Files
+# *.json
 *.json
 commands.txt
