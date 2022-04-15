@@ -143,20 +143,31 @@ CORS_ALLOW_CREDENTIALS = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-STORAGE_CLIENT = storage.Client.from_service_account_json(
-    os.path.join(BASE_DIR, "metal-celerity-347205-e3b12125a840.json")
-)
+if environment_variables.DEVELOPMENT:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    STATIC_URL = "/static/"
 
-BUCKET = STORAGE_CLIENT.get_bucket("dirtybits-bucket1")
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+    MEDIA_URL = "/media/"
 
-DEFAULT_FILE_STORAGE = "backend.storage_backends.GoogleCloudMediaStorage"
-STATICFILES_STORAGE = "backend.storage_backends.GoogleCloudStaticStorage"
-GS_BUCKET_NAME = "dirtybits-bucket1"
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, "metal-celerity-347205-e3b12125a840.json")
-)
-STATIC_URL = "https://storage.googleapis.com/dirtybits-bucket1/static/"
-MEDIA_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/"
+else:
+    cred_path = environment_variables.CREDENTIAL_PATH
+
+    STORAGE_CLIENT = storage.Client.from_service_account_json(
+        cred_path
+    )
+
+    BUCKET = STORAGE_CLIENT.get_bucket("dirtybits-bucket1")
+
+    DEFAULT_FILE_STORAGE = "backend.storage_backends.GoogleCloudMediaStorage"
+    STATICFILES_STORAGE = "backend.storage_backends.GoogleCloudStaticStorage"
+    GS_BUCKET_NAME = "dirtybits-bucket1"
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        cred_path
+    )
+    STATIC_URL = "https://storage.googleapis.com/dirtybits-bucket1/static/"
+    MEDIA_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/"
 
 
 # Celery Settings

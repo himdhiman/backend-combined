@@ -210,3 +210,6 @@ dmypy.json
 *.json
 environment_variables.py
 commands.txt
+nginx/
+static/
+media/

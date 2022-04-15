@@ -1,4 +1,4 @@
-import os, requests, json, ast, cloudinary.uploader
+import os, requests, json, ast
 from authentication.models import StaticData
 
 def convert_to_list(data):
@@ -9,10 +9,6 @@ def convert_to_list(data):
         return_data = ast.literal_eval(qery_list)
     return return_data
 
-
-def delete_cloudinary_image(public_id):
-    cloudinary.uploader.destroy(public_id, resource_type="image")
-    return
 
 
 def create_user_notifcation(email, username, create=True):

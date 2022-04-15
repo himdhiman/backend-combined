@@ -13,7 +13,6 @@ from rest_framework import permissions, status
 from django.conf import settings
 import random, string, requests, threading, requests
 from authentication.helper import convert_to_list, create_user_notifcation
-import cloudinary.uploader
 
 # from rest_framework_simplejwt.tokens import RefreshToken
 
