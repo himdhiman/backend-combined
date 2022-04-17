@@ -14,7 +14,8 @@ class convert_string_to_list:
 
 class base_encoding:
     @classmethod
-    def base64_file(data, name=None):
+    def base64_file(self, data, name=None):
+        print(data)
         _format, _img_str = data.split(';base64,')
         _name, ext = _format.split('/')
         if not name:

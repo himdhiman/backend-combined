@@ -14,7 +14,7 @@ from django.conf import settings
 BASE_DIR = Path(__file__).resolve().parent.parent
 channel_layer = get_channel_layer()
 http = urllib3.PoolManager()
-BASE_URL = "https://res.cloudinary.com/hhikcz56h/raw/upload/v1636969572/TestCases/"
+BASE_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/TestCases/"
 
 
 @shared_task(bind=True)
@@ -142,16 +142,16 @@ def runCode(self, context):
         print(len(prev_submissions))
         if len(prev_submissions) == 0:
             print(len(prev_submissions))
-            requests.post(
-                settings.AUTH_SERVER_URL + "auth/incScore/",
-                data={
-                    "email": inst.created_By,
-                    "problem_id": int(probId),
-                    "inc": int((counter / totaltc)) * prob.max_score,
-                    "type": prob.problem_level,
-                    "date_time": inst.submission_Date_Time,
-                },
-            )
+            # requests.post(
+            #     settings.AUTH_SERVER_URL + "auth/incScore/",
+            #     data={
+            #         "email": inst.created_By,
+            #         "problem_id": int(probId),
+            #         "inc": int((counter / totaltc)) * prob.max_score,
+            #         "type": prob.problem_level,
+            #         "date_time": inst.submission_Date_Time,
+            #     },
+            # )
             setattr(inst, "test_Cases_Passed", counter)
             setattr(inst, "total_Test_Cases", totaltc)
             setattr(inst, "score", int((counter / totaltc)) * prob.max_score)

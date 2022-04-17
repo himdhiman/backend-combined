@@ -2,6 +2,7 @@ from django.conf import settings
 from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.core.files.base import ContentFile
 from problems.models import (
     Problem,
     Submission,
@@ -12,7 +13,7 @@ from problems.models import (
     SavedCode,
     ProblemMedia,
 )
-import json
+import json, os
 from problems.serializers import (
     AllSubmissionsSerializer,
     TagSerializer,
@@ -28,6 +29,7 @@ from problems.serializers import (
 from datetime import datetime
 from runcode.helper import encode_data
 from problems.helper import convert_string_to_list, base_encoding
+from backend import environment_variables
 
 
 class getTagList(APIView):
@@ -137,10 +139,16 @@ class UploadTestCases(APIView):
         setattr(problem, "sample_Tc", request.data["custom_test_cases"])
         setattr(problem, "total_Tc", request.data["test_cases"])
         problem.save()
-        for key, _ in request.FILES.items():
-            print(key)
-            blob = settings.BUCKET.blob(f"media/TestCases/{str(probId)}/{key}.txt")
-            blob.upload_from_file(request.FILES[key])
+        if environment_variables.DEVELOPMENT:
+            os.mkdir(os.path.join(settings.BASE_DIR, f"media\TestCases\{str(probId)}"))
+            for key, _ in request.FILES.items():
+                f = open(os.path.join(settings.BASE_DIR, f"media/TestCases/{str(probId)}/{key}.txt"), "wb")
+                f.write(request.FILES[key].read())
+                f.close()
+        else:
+            for key, _ in request.FILES.items():
+                blob = settings.BUCKET.blob(f"media/TestCases/{str(probId)}/{key}.txt")
+                blob.upload_from_file(request.FILES[key])
         return Response(status=status.HTTP_200_OK)
 
 
