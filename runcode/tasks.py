@@ -1,4 +1,4 @@
-import os, urllib3, requests
+import urllib3
 from celery import shared_task
 from problems.serializers import SubmissionSerializer
 from pathlib import Path
@@ -7,14 +7,17 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core import serializers as djSerializer
 from django.db.models import F
-from problems import middleware
-from runcode.helper import runcode_helper, encode_data, decode_data
-from django.conf import settings
+from runcode.helper import runcode_helper, encode_data, decode_data, UpdateUserProfile
+from backend import environment_variables
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 channel_layer = get_channel_layer()
 http = urllib3.PoolManager()
-BASE_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/TestCases/"
+
+if environment_variables.DEVELOPMENT:
+    BASE_URL = "http://localhost:8000/media/TestCases/"
+else:
+    BASE_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/TestCases/"
 
 
 @shared_task(bind=True)
@@ -142,16 +145,15 @@ def runCode(self, context):
         print(len(prev_submissions))
         if len(prev_submissions) == 0:
             print(len(prev_submissions))
-            # requests.post(
-            #     settings.AUTH_SERVER_URL + "auth/incScore/",
-            #     data={
-            #         "email": inst.created_By,
-            #         "problem_id": int(probId),
-            #         "inc": int((counter / totaltc)) * prob.max_score,
-            #         "type": prob.problem_level,
-            #         "date_time": inst.submission_Date_Time,
-            #     },
-            # )
+            data={
+                "email": inst.created_By,
+                "problem_id": int(probId),
+                "inc": int((counter / totaltc)) * prob.max_score,
+                "type": prob.problem_level,
+                "date_time": inst.submission_Date_Time.strftime("%d/%m/%Y")
+,
+            }
+            UpdateUserProfile.updateData(data)
             setattr(inst, "test_Cases_Passed", counter)
             setattr(inst, "total_Test_Cases", totaltc)
             setattr(inst, "score", int((counter / totaltc)) * prob.max_score)

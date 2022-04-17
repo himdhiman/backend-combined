@@ -1,7 +1,14 @@
 import requests, json, base64, urllib3
 from problems.models import Problem
+from authentication.models import UserProfile
+from authentication.helper import convert_to_list
+from backend import environment_variables
 
-BASE_URL = "https://storage.googleapis.com/dirtybits-bucket/media/TestCases/"
+if environment_variables.DEVELOPMENT:
+    BASE_URL = "http://localhost:8000/media/TestCases/"
+else:
+    BASE_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/TestCases/"
+
 http = urllib3.PoolManager()
 
 
@@ -35,6 +42,7 @@ def runCustomTestCases(req_data):
         input_target_url = BASE_URL + str(probId) + "/" + f"sc-input{str(i)}.txt"
         input_response = http.request("GET", input_target_url)
         input_data = input_response.data.decode("utf-8")
+        print(input_data.strip())
         data = {
             "code": req_data["code"],
             "lang": req_data["language"],
@@ -88,3 +96,34 @@ def encode_data(message):
 
 def decode_data(base64_message):
     return base64.b64decode(base64_message).decode("utf-8")
+
+
+class UpdateUserProfile:
+    @classmethod
+    def updateData(self, request_data):
+        date = request_data["date_time"]
+        obj = UserProfile.objects.get(email=request_data["email"])
+        setattr(obj, "score", obj.score + int(request_data["inc"]))
+
+        if request_data["type"] == "H":
+            setattr(obj, "hard_solved", obj.hard_solved + 1)
+        elif request_data["type"] == "M":
+            setattr(obj, "medium_solved", obj.medium_solved + 1)
+        elif request_data["type"] == "E":
+            setattr(obj, "easy_solved", obj.easy_solved + 1)
+
+        if obj.submissions == "":
+            data = {date: [int(request_data["problem_id"])]}
+            setattr(obj, "submissions", str(data))
+        else:
+            try:
+                list_data = convert_to_list(obj.submissions)
+                if not list_data.get(date):
+                    list_data[date] = [int(request_data["problem_id"])]
+                else:
+                    list_data[date].append(int(request_data["problem_id"]))
+                setattr(obj, "submissions", str(list_data))
+            except:
+                data = {date: [int(request_data["problem_id"])]}
+            setattr(obj, "submissions", str(data))
+        obj.save()
