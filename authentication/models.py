@@ -169,7 +169,9 @@ def after_creating_user(sender, instance, created, **kwargs):
         return
     num = random.randint(0, obj.avatar_count - 1)
     avatar_objs = Avatar.objects.all()
-    setattr(instance, "profile_pic", avatar_objs[num].image.url)
+    url = avatar_objs[num].image.url
+    url = url.split("?")
+    setattr(instance, "profile_pic", url[0])
     instance.save()
     return
 
