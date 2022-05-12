@@ -5,9 +5,9 @@ from authentication.helper import convert_to_list
 from backend import environment_variables
 
 if environment_variables.DEVELOPMENT:
-    BASE_URL = "http://localhost:8000/media/TestCases/"
+    BASE_URL = f"https://storage.googleapis.com/{environment_variables.BUCKET_NAME}/media/TestCases/"
 else:
-    BASE_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/TestCases/"
+    BASE_URL = f"https://storage.googleapis.com/{environment_variables.BUCKET_NAME}/media/TestCases/"
 
 http = urllib3.PoolManager()
 

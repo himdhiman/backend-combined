@@ -1,6 +1,7 @@
 import os, requests, json, ast
 from authentication.models import StaticData
 
+
 def convert_to_list(data):
     try:
         return_data = ast.literal_eval(data)
@@ -8,7 +9,6 @@ def convert_to_list(data):
         qery_list = json.dumps(data)
         return_data = ast.literal_eval(qery_list)
     return return_data
-
 
 
 def create_user_notifcation(email, username, create=True):
@@ -42,4 +42,3 @@ class set_fixed_data:
                 setattr(obj, "hard", obj.hard - 1)
         obj.save()
         return
-

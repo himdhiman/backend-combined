@@ -135,11 +135,11 @@ def before_saving_problem(sender, instance, *args, **kwargs):
 
     if curr_instance.approved_by_admin == False and instance.approved_by_admin:
         send_data["type"] = "increase"
-        set_fixed_data.set_data(request_data = send_data)
+        set_fixed_data.set_data(request_data=send_data)
 
     elif curr_instance.approved_by_admin and instance.approved_by_admin == False:
         send_data["type"] = "decrease"
-        set_fixed_data.set_data(request_data = send_data)
+        set_fixed_data.set_data(request_data=send_data)
     return
 
 
@@ -148,11 +148,12 @@ def before_deleting_problem(sender, instance, *args, **kwargs):
     blobs = settings.BUCKET.list_blobs(prefix=f"media/TestCases/{instance.id}/")
     for blob in blobs:
         blob.delete()
-    pids = convert_string_to_list.convert_to_list(data = instance.media_ids)
+    pids = convert_string_to_list.convert_to_list(data=instance.media_ids)
     for i in pids:
-        pm = ProblemMedia.objects.filter(id = int(i))
+        pm = ProblemMedia.objects.filter(id=int(i))
         pm.delete()
     return
+
 
 @receiver(pre_delete, sender=ProblemMedia)
 def before_deleting_ProblemMedia(sender, instance, *args, **kwargs):

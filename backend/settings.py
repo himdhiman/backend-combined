@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from datetime import timedelta
 from google.cloud import storage
@@ -26,6 +25,7 @@ INSTALLED_APPS = [
     "authentication",
     "runcode",
     "problems",
+    "mail",
     "corsheaders",
     "django_celery_results",
     "django_celery_beat",
@@ -143,31 +143,21 @@ CORS_ALLOW_CREDENTIALS = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-if environment_variables.DEVELOPMENT:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    STATIC_ROOT = os.path.join(BASE_DIR, "static")
-    STATIC_URL = "/static/"
 
-    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-    MEDIA_URL = "/media/"
+cred_path = environment_variables.CREDENTIAL_PATH
 
-else:
-    cred_path = environment_variables.CREDENTIAL_PATH
+STORAGE_CLIENT = storage.Client.from_service_account_json(cred_path)
 
-    STORAGE_CLIENT = storage.Client.from_service_account_json(
-        cred_path
-    )
+BUCKET = STORAGE_CLIENT.get_bucket(environment_variables.BUCKET_NAME)
 
-    BUCKET = STORAGE_CLIENT.get_bucket("dirtybits-bucket1")
-
-    DEFAULT_FILE_STORAGE = "backend.storage_backends.GoogleCloudMediaStorage"
-    STATICFILES_STORAGE = "backend.storage_backends.GoogleCloudStaticStorage"
-    GS_BUCKET_NAME = "dirtybits-bucket1"
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        cred_path
-    )
-    STATIC_URL = "https://storage.googleapis.com/dirtybits-bucket1/static/"
-    MEDIA_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/"
+DEFAULT_FILE_STORAGE = "backend.storage_backends.GoogleCloudMediaStorage"
+STATICFILES_STORAGE = "backend.storage_backends.GoogleCloudStaticStorage"
+GS_BUCKET_NAME = environment_variables.BUCKET_NAME
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(cred_path)
+STATIC_URL = (
+    f"https://storage.googleapis.com/{environment_variables.BUCKET_NAME}/static/"
+)
+MEDIA_URL = f"https://storage.googleapis.com/{environment_variables.BUCKET_NAME}/media/"
 
 
 # Celery Settings

@@ -47,9 +47,9 @@ class RegisterView(APIView):
                     "username": user.username,
                     "email": user.email,
                 }
-                threading.Thread(
-                    target=self.send_verification_mail, args=(data,)
-                ).start()
+                # threading.Thread(
+                #     target=self.send_verification_mail, args=(data,)
+                # ).start()
                 return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

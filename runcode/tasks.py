@@ -15,9 +15,9 @@ channel_layer = get_channel_layer()
 http = urllib3.PoolManager()
 
 if environment_variables.DEVELOPMENT:
-    BASE_URL = "http://localhost:8000/media/TestCases/"
+    BASE_URL = f"https://storage.googleapis.com/{environment_variables.BUCKET_NAME}/media/TestCases/"
 else:
-    BASE_URL = "https://storage.googleapis.com/dirtybits-bucket1/media/TestCases/"
+    BASE_URL = f"https://storage.googleapis.com/{environment_variables.BUCKET_NAME}/media/TestCases/"
 
 
 @shared_task(bind=True)
@@ -145,13 +145,12 @@ def runCode(self, context):
         print(len(prev_submissions))
         if len(prev_submissions) == 0:
             print(len(prev_submissions))
-            data={
+            data = {
                 "email": inst.created_By,
                 "problem_id": int(probId),
                 "inc": int((counter / totaltc)) * prob.max_score,
                 "type": prob.problem_level,
-                "date_time": inst.submission_Date_Time.strftime("%d/%m/%Y")
-,
+                "date_time": inst.submission_Date_Time.strftime("%d/%m/%Y"),
             }
             UpdateUserProfile.updateData(data)
             setattr(inst, "test_Cases_Passed", counter)

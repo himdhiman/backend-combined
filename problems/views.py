@@ -2,7 +2,6 @@ from django.conf import settings
 from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.core.files.base import ContentFile
 from problems.models import (
     Problem,
     Submission,
@@ -13,7 +12,7 @@ from problems.models import (
     SavedCode,
     ProblemMedia,
 )
-import json, os
+import json
 from problems.serializers import (
     AllSubmissionsSerializer,
     TagSerializer,
@@ -29,7 +28,6 @@ from problems.serializers import (
 from datetime import datetime
 from runcode.helper import encode_data
 from problems.helper import convert_string_to_list, base_encoding
-from backend import environment_variables
 
 
 class getTagList(APIView):
@@ -125,7 +123,9 @@ class UploadProblemImage(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        res = ProblemMedia.objects.create(image = base_encoding.base64_file(request.data["image"]))
+        res = ProblemMedia.objects.create(
+            image=base_encoding.base64_file(request.data["image"])
+        )
         data = {"url": res.image.url, "public_id": res.id}
         return Response(data=data, status=status.HTTP_201_CREATED)
 
@@ -139,16 +139,9 @@ class UploadTestCases(APIView):
         setattr(problem, "sample_Tc", request.data["custom_test_cases"])
         setattr(problem, "total_Tc", request.data["test_cases"])
         problem.save()
-        if environment_variables.DEVELOPMENT:
-            os.mkdir(os.path.join(settings.BASE_DIR, f"media\TestCases\{str(probId)}"))
-            for key, _ in request.FILES.items():
-                f = open(os.path.join(settings.BASE_DIR, f"media/TestCases/{str(probId)}/{key}.txt"), "wb")
-                f.write(request.FILES[key].read())
-                f.close()
-        else:
-            for key, _ in request.FILES.items():
-                blob = settings.BUCKET.blob(f"media/TestCases/{str(probId)}/{key}.txt")
-                blob.upload_from_file(request.FILES[key])
+        for key, _ in request.FILES.items():
+            blob = settings.BUCKET.blob(f"media/TestCases/{str(probId)}/{key}.txt")
+            blob.upload_from_file(request.FILES[key])
         return Response(status=status.HTTP_200_OK)
 
 
@@ -227,7 +220,6 @@ class HandleUpvoteDownvote(APIView):
 
 
 class GetProblemPageData(APIView):
-
     def get(self, request, id):
         request_data = request.data
         request_data["problem_id"] = id

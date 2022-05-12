@@ -6,26 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('problems', '0001_initial'),
+        ("problems", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='problemmedia',
-            name='media_type',
+            model_name="problemmedia",
+            name="media_type",
         ),
         migrations.RemoveField(
-            model_name='problemmedia',
-            name='problem',
+            model_name="problemmedia",
+            name="problem",
         ),
         migrations.RemoveField(
-            model_name='problemmedia',
-            name='public_id',
+            model_name="problemmedia",
+            name="public_id",
         ),
         migrations.AddField(
-            model_name='problemmedia',
-            name='image',
-            field=models.ImageField(default='abcd', upload_to='ProblemMedia'),
+            model_name="problemmedia",
+            name="image",
+            field=models.ImageField(default="abcd", upload_to="ProblemMedia"),
             preserve_default=False,
         ),
     ]
