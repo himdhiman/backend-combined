@@ -213,3 +213,4 @@ commands.txt
 nginx/
 static/
 media/
+migrations/
