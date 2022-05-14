@@ -9,7 +9,7 @@ urlpatterns = [
         "authenticate/", views.CustomTokenObtainPairView.as_view(), name="token_create"
     ),
     path("refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"),
-    # path("logout/", views.LogoutView.as_view()),
+    path("logout/", views.LogoutView.as_view()),
     path("register/", views.RegisterView.as_view()),
     path("getuser/", views.GetUserData.as_view()),
     path("google/", views.GoogleSocialAuthView.as_view()),
