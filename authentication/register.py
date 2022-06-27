@@ -15,21 +15,25 @@ def get_jwt_token(user):
     decode_JWT_refresh = jwt.decode(tokens["refresh"], settings.SECRET_KEY, "HS256")
     decode_JWT_access = jwt.decode(tokens["access"], settings.SECRET_KEY, "HS256")
 
-    decode_JWT_refresh["email"] = user.email
-    decode_JWT_refresh["is_admin"] = user.is_admin
-    decode_JWT_refresh["is_verified"] = user.is_verified
-    decode_JWT_refresh["first_name"] = user.first_name
-    decode_JWT_refresh["last_name"] = user.last_name
-    decode_JWT_refresh["username"] = user.username
-    decode_JWT_refresh["profile_pic"] = user.profile_pic
+    decode_JWT_refresh["user_data"] = {}
 
-    decode_JWT_access["email"] = user.email
-    decode_JWT_access["is_admin"] = user.is_admin
-    decode_JWT_access["is_verified"] = user.is_verified
-    decode_JWT_access["first_name"] = user.first_name
-    decode_JWT_access["last_name"] = user.last_name
-    decode_JWT_access["username"] = user.username
-    decode_JWT_access["profile_pic"] = user.profile_pic
+    decode_JWT_refresh["user_data"]["email"] = user.email
+    decode_JWT_refresh["user_data"]["is_admin"] = user.is_admin
+    decode_JWT_refresh["user_data"]["is_verified"] = user.is_verified
+    decode_JWT_refresh["user_data"]["first_name"] = user.first_name
+    decode_JWT_refresh["user_data"]["last_name"] = user.last_name
+    decode_JWT_refresh["user_data"]["username"] = user.username
+    decode_JWT_refresh["user_data"]["profile_pic"] = user.profile_pic
+
+    decode_JWT_access["user_data"] = {}
+
+    decode_JWT_access["user_data"]["email"] = user.email
+    decode_JWT_access["user_data"]["is_admin"] = user.is_admin
+    decode_JWT_access["user_data"]["is_verified"] = user.is_verified
+    decode_JWT_access["user_data"]["first_name"] = user.first_name
+    decode_JWT_access["user_data"]["last_name"] = user.last_name
+    decode_JWT_access["user_data"]["username"] = user.username
+    decode_JWT_access["user_data"]["profile_pic"] = user.profile_pic
 
     tokens["refresh"] = jwt.encode(decode_JWT_refresh, settings.SECRET_KEY, "HS256")
     tokens["access"] = jwt.encode(decode_JWT_access, settings.SECRET_KEY, "HS256")
@@ -93,6 +97,6 @@ def register_social_user(provider, user_id, email, name, pic):
             user.profile_pic = pic
             user.auth_provider = provider
             user.save()
-        profile_obj = UserProfile(email=user.email)
+        profile_obj = UserProfile(user=user)
         profile_obj.save()
         return get_jwt_token(user)

@@ -15,6 +15,8 @@ import random, string, requests, threading, requests
 from authentication.helper import convert_to_list, create_user_notifcation
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from notifications.models import Notification
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)
@@ -116,8 +118,6 @@ class VerifyUser(APIView):
             )
         v_obj = v_obj.first()
         user_ins = v_obj.user
-        profile_obj = UserProfile(email=user_ins.email)
-        profile_obj.save()
         if user_ins.is_verified:
             return Response(
                 data={"message": "Account already Verified ✔️"},
@@ -126,6 +126,8 @@ class VerifyUser(APIView):
         setattr(user_ins, "is_verified", True)
         user_ins.save()
         v_obj.delete()
+        UserProfile.objects.create(user=user_ins)
+        Notification.objects.create(user=user_ins.id)
         threading.Thread(
             target=create_user_notifcation,
             kwargs={
@@ -245,7 +247,7 @@ class UpdateUserProfile(APIView):
     def post(self, request):
         request_data = request.data
         date = request_data["date_time"].split(" ")[0]
-        obj = UserProfile.objects.get(email=request_data["email"])
+        obj = UserProfile.objects.get(user__email=request_data["email"])
         setattr(obj, "score", obj.score + int(request_data["inc"]))
 
         if request_data["type"] == "H":
@@ -295,7 +297,7 @@ class UpdateUserProfile(APIView):
 
 class GetUserProfile(APIView):
     def get(self, request):
-        obj = UserProfile.objects.get(email=request.user.email)
+        obj = UserProfile.objects.get(user=request.user)
         data = serializers.UserProfileSerializer(obj)
         return Response(data=data.data, status=status.HTTP_200_OK)
 

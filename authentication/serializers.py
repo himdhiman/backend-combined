@@ -12,13 +12,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super(CustomTokenObtainPairSerializer, cls).get_token(user)
-        token["email"] = user.email
-        token["is_verified"] = user.is_verified
-        token["is_admin"] = user.is_admin
-        token["first_name"] = user.first_name
-        token["last_name"] = user.last_name
-        token["username"] = user.username
-        token["profile_pic"] = user.profile_pic
+        token["user_data"] = {}
+        token["user_data"]["email"] = user.email
+        token["user_data"]["is_verified"] = user.is_verified
+        token["user_data"]["is_admin"] = user.is_admin
+        token["user_data"]["first_name"] = user.first_name
+        token["user_data"]["last_name"] = user.last_name
+        token["user_data"]["username"] = user.username
+        token["user_data"]["profile_pic"] = user.profile_pic
         user.last_login = date.today()
         user.save()
         return token

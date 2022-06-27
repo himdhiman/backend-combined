@@ -4,22 +4,9 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from notifications.models import Notification
 
 # from authentication.helper import create_user_notifcation
-
-
-class UserProfile(models.Model):
-    email = models.EmailField(verbose_name="email", unique=True, max_length=60)
-    score = models.IntegerField(blank=True, null=True, default=0)
-    rank = models.IntegerField(blank=True, null=True, default=0)
-    rating = models.IntegerField(blank=True, null=True, default=0)
-    hard_solved = models.IntegerField(blank=True, null=True, default=0)
-    medium_solved = models.IntegerField(blank=True, null=True, default=0)
-    easy_solved = models.IntegerField(blank=True, null=True, default=0)
-    submissions = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.email
 
 
 class StaticData(models.Model):
@@ -81,8 +68,9 @@ class CustomUserManager(BaseUserManager):
         user.is_verified = True
 
         user.save(using=self._db)
-        profile_obj = UserProfile(email=user.email)
-        profile_obj.save()
+        UserProfile.objects.create(user=user)
+        Notification.objects.create(user=user.id)
+
         # threading.Thread(
         #     target=create_user_notifcation,
         #     kwargs={"email": self.normalize_email(email), "create": True, "username": username},
@@ -140,6 +128,19 @@ class PasswordChange(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
     pass_slug = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.user.email
+
+class UserProfile(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    score = models.IntegerField(blank=True, null=True, default=0)
+    rank = models.IntegerField(blank=True, null=True, default=0)
+    rating = models.IntegerField(blank=True, null=True, default=0)
+    hard_solved = models.IntegerField(blank=True, null=True, default=0)
+    medium_solved = models.IntegerField(blank=True, null=True, default=0)
+    easy_solved = models.IntegerField(blank=True, null=True, default=0)
+    submissions = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.user.email

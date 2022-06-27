@@ -1,4 +1,5 @@
 from authentication.models import *
+from notifications.models import Notification
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save
 import threading, random
@@ -46,6 +47,7 @@ def before_deleting_user(sender, instance, *args, **kwargs):
     obj = StaticData.objects.all().first()
     setattr(obj, "users_count", obj.users_count - 1)
     obj.save()
+    Notification.objects.filter(user = instance.id).delete()
     return
 
 

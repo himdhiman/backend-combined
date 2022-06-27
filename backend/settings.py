@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "runcode",
     "problems",
     "mail",
+    "notifications.apps.NotificationsConfig",
     "corsheaders",
     "django_celery_results",
     "django_celery_beat",

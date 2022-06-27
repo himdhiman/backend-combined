@@ -9,6 +9,7 @@ urlpatterns = [
         "authenticate/", views.CustomTokenObtainPairView.as_view(), name="token_create"
     ),
     path("refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"),
+    path("verify/", jwt_views.TokenVerifyView.as_view(), name="token_verify"),
     path("logout/", views.LogoutView.as_view()),
     path("register/", views.RegisterView.as_view()),
     path("getuser/", views.GetUserData.as_view()),
